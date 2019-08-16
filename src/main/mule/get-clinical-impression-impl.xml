@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="get-clinical-impression-implFlow" doc:id="e20b9d89-d2b6-4632-a6f3-2a5234028c20" >
+		<ee:transform doc:name="Set Variables" doc:id="15ef3c81-5ad6-4e9e-89ab-ede6269d0020" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/clientId.dwl" variableName="clientId" />
+				<ee:set-variable resource="dwl/apiName.dwl" variableName="apiName" />
+				<ee:set-variable resource="dwl/timeInNanoSeconds.dwl" variableName="startTime" />
+				<ee:set-variable resource="dwl/correlationId.dwl" variableName="correlationId" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Entry Logger" doc:id="0216f5f2-4df9-47be-b602-23a5db393931" message="#[${file::dwl/logRequest-Entry.dwl}]"/>
+		<flow-ref doc:name="Invoke_Clinical_Impression_SystemAPI_Flow" doc:id="600b42e7-c293-4c51-be3f-a996b69e2003" name="Invoke_Clinical_Impression_SystemAPI_Flow"/>
+		<logger level="INFO" doc:name="Exit Logger" doc:id="6f965ef3-126c-4423-a9b5-f2b3a4515e40" message="#[${file::dwl/logRequest-Exit.dwl}]"/>
+	</flow>
+	<sub-flow name="Invoke_Clinical_Impression_SystemAPI_Flow" doc:id="b882e539-bc4a-4801-acc2-26e054c7c55f" >
+		<choice doc:name="Choice" doc:id="f6188b2b-bebc-4c70-bb95-b69833c7b080" >
+			<when expression="${file::dwl/ruleClientIdMatch.dwl}">
+				<flow-ref doc:name="Valid ClientId Subflow" doc:id="4af5b8e1-14ae-4ae2-9647-508f5157f814" name="valid-clientId-subflow" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="6616b931-dc98-4aa2-adbb-64c65d434bf9" message="Invalid clientId received!!!"/>
+				<ee:transform doc:name="Bad Request" doc:id="260254b3-d922-4cf8-8295-856565ae0138" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: 400,
+	message: 'Invalid ClientID'
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+400
+]]></ee:set-variable>
+						<ee:set-variable variableName="httpReason" ><![CDATA[%dw 2.0
+output application/java
+---
+'Invalid ClientID']]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="valid-clientId-subflow" doc:id="eeef0c96-e3f4-4c1e-8b30-56a1104053b2" >
+		<logger level="INFO" doc:name="Logger" doc:id="c8e163dc-8c5f-4903-aa6a-5c6c49de53bf" message="Invoking SEMA4 system API" />
+		<try doc:name="Try" doc:id="c238567b-5028-47ed-8f97-82265ee4230d" >
+			<http:request method="GET" doc:name="Get Call Care Plan" doc:id="b73154f0-c446-4cc8-b4e1-e3042a37fffa" path="/System/SEMA4/ClinicalImpression" config-ref="https-rc_SYS" />
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="195e4f46-1fc7-4620-9466-2dad523e37fd" >
+					<logger level="INFO" doc:name="Logger" doc:id="17fdbf47-eda5-4085-a812-711aba931de4" message="Catch Block"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

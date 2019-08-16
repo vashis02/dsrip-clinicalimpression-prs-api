@@ -1,0 +1,39 @@
+#%RAML 1.0
+title: Mount Sinai Health System Patient Process API
+version: v1
+baseUri: https://mocksvc.mulesoft.com/mocks/5fa46440-61a4-45d9-8788-6d3be2bac8e2/api
+mediaType: [application/xml, application/json]
+
+types:
+  ClinicalImpression: !include dataTypes/ClinicalImpression.raml
+  errorResponse: !include dataTypes/ErrorResponse.raml
+  successResponse: !include dataTypes/SuccessResponse.raml
+
+resourceTypes:
+  processResourceType: !include resourceTypes/processResource.raml
+  subProcessResourceType: !include resourceTypes/subProcessResource.raml
+
+traits:  
+  clinicalImpressionSearch:
+    queryParameters: !include queryParams/clinicalImpressionParams.yaml
+  
+  
+### API definition ###
+
+
+/ClinicalImpression:
+  displayName: ClinicalImpression
+  description: A clinical assessment performed when planning treatments and management strategies for a patient
+  type: processResourceType
+  get:
+    description: Retrieve all ClinicalImpression details.
+    is: [ clinicalImpressionSearch ] 
+                              
+  post:
+    description: Create a new ClinicalImpression detail
+   
+  put:
+    description: Update ClinicalImpression specified by ID
+      
+  delete:
+    description: Delete ClinicalImpression specified by ID

@@ -1,0 +1,78 @@
+#%RAML 1.0 ResourceType
+
+#This file is located at resourceTypes/systemResource.raml
+
+
+get:   
+  responses: 
+    200:
+      body:
+        application/json:
+          type: <<resourcePathName>>[]
+          #example: <<getExample>>
+            
+post:
+  body:
+    application/json:
+      type: <<resourcePathName>>
+      #example: <<postExample>>
+  responses:
+    201:
+      description: Created
+      body:
+        application/json:
+#          example: |
+#            {
+#              "Patientid": "d7ac7f99-9d66-4f59-af39-d7519b7daad9"
+#              "Patientname": "Example Company"
+#            }
+    400:
+        body:
+          application/json:
+            type: errorResponse
+#            example: |
+#              {
+#                "message": "Failed to create new patient"
+#              }
+           
+put:
+  body:
+    application/json:
+      type: <<resourcePathName>>
+      #example: <<putExample>>
+  responses:
+    200:
+      body:
+        application/json:
+          type: successResponse
+#          example: |
+#            {
+#              "status": "OK"
+#            }
+    404:
+      body:
+        application/json:
+          type: errorResponse
+#          example: |
+#            {
+#              "message": "Resource not found"
+#            }
+delete:
+  responses:
+    200:
+      body:
+        application/json:
+          type: successResponse
+#          example: |
+#            {
+#              "status": "OK"
+#            }
+    404:
+      body:
+        application/json:
+          type: errorResponse
+#          example: |
+#            {
+#              "message": "Resource not found"
+#            }               
+  

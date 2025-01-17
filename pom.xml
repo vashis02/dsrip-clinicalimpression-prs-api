@@ -15,7 +15,7 @@
 		<log4j.version>2.11.1</log4j.version>
 		<maven.compiler.version>3.8.0</maven.compiler.version>
 		<mule.maven.plugin.version>3.2.7</mule.maven.plugin.version>
-		<mule.module.apikit.version>1.1.1</mule.module.apikit.version>
+		<mule.module.apikit.version>1.3.8-1</mule.module.apikit.version>
 		<mule.module.scripting.version>1.1.2</mule.module.scripting.version>
 		<mule.munit.version>2.1.5</mule.munit.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
